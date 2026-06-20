@@ -14,13 +14,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        jwt:
-       #environment variables:  JWT_SECRET=MySuperSecretKeyForSmartMatchProjectAuth2026
-          secret: ${JWT_SECRET:dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLXNlY3JldC1rZXktZm9yLWp3dC1hdXRoZW50aWNhdGlvbg==}
-          access-token-expiration: 900000
-          refresh-token-expiration: 604800000
-          spring:
-            data:
-              redis:
-                host: localhost
-                port: 6379
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret: ${JWT_SECRET:dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLXNlY3JldC1rZXktZm9yLWp3dC1hdXRoZW50aWNhdGlvbg==}
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000
