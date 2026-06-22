@@ -6,11 +6,16 @@ import com.project.smartmatch.model.request.LoginRequest;
 import com.project.smartmatch.model.request.RegisterRequest;
 import com.project.smartmatch.model.entity.Role;
 import com.project.smartmatch.model.entity.User;
+import com.project.smartmatch.model.entity.CandidateProfile;
+import com.project.smartmatch.model.entity.EmployerProfile;
 import com.project.smartmatch.repository.RoleRepository;
 import com.project.smartmatch.repository.UserRepository;
+import com.project.smartmatch.repository.CandidateProfileRepository;
+import com.project.smartmatch.repository.EmployerProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -21,17 +26,20 @@ import java.util.Set;
 public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final CandidateProfileRepository candidateProfileRepository;
+    private final EmployerProfileRepository employerProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
 
+    @Transactional // Profil oluştururken bir hata alınırsa kullanıcının da kaydedilmesini engeller (Rollback)
     public String register(RegisterRequest request){
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists!");
         }
 
         String roleName;
-        try{
+        try {
             roleName = request.getRole();
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid role type!");
@@ -44,12 +52,24 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
-
         user.setRoles(Set.of(role));
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        return "User registered successfully";
+        // Kullanıcının seçtiği role göre ilgili boş profili oluşturup kaydediyoruz
+        if ("CANDIDATE".equalsIgnoreCase(roleName)) {
+            CandidateProfile candidateProfile = new CandidateProfile();
+            candidateProfile.setUser(savedUser); // OneToOne ilişki bağlandı
+            candidateProfileRepository.save(candidateProfile);
+        } else if ("EMPLOYER".equalsIgnoreCase(roleName)) {
+            EmployerProfile employerProfile = new EmployerProfile();
+            employerProfile.setUser(savedUser); // OneToOne ilişki bağlandı
+            employerProfileRepository.save(employerProfile);
+        } else {
+            throw new RuntimeException("Unsupported role profile creation!");
+        }
+
+        return "User and profile registered successfully";
     }
 
     public AuthResponse login(LoginRequest request) {
