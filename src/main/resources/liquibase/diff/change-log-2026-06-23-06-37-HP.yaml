@@ -1,0 +1,273 @@
+databaseChangeLog:
+- changeSet:
+    id: 1782196643979-1
+    author: HP (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: candidate_profilesPK
+            name: id
+            type: INTEGER
+        - column:
+            name: education
+            type: TEXT
+        - column:
+            name: experience
+            type: TEXT
+        - column:
+            name: phone_number
+            type: VARCHAR(255)
+        - column:
+            name: resume_url
+            type: VARCHAR(255)
+        - column:
+            name: skills
+            type: TEXT
+        - column:
+            name: title
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        tableName: candidate_profiles
+- changeSet:
+    id: 1782196643979-2
+    author: HP (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: employer_profilesPK
+            name: id
+            type: INTEGER
+        - column:
+            name: company_name
+            type: VARCHAR(255)
+        - column:
+            name: description
+            type: TEXT
+        - column:
+            name: industry
+            type: VARCHAR(255)
+        - column:
+            name: phone_number
+            type: VARCHAR(255)
+        - column:
+            name: website_url
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        tableName: employer_profiles
+- changeSet:
+    id: 1782196643979-3
+    author: HP (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: job_postingsPK
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: city
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: created_at
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: description
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: is_active
+            type: BOOLEAN
+        - column:
+            name: required_skills
+            type: TEXT[]
+        - column:
+            name: salary_max
+            type: INTEGER
+        - column:
+            name: salary_min
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: title
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: employer_id
+            type: INTEGER
+        tableName: job_postings
+- changeSet:
+    id: 1782196643979-4
+    author: HP (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: rolesPK
+            name: id
+            type: INTEGER
+        - column:
+            name: name
+            type: VARCHAR(255)
+        tableName: roles
+- changeSet:
+    id: 1782196643979-5
+    author: HP (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: user_rolesPK
+            name: user_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: user_rolesPK
+            name: role_id
+            type: INTEGER
+        tableName: user_roles
+- changeSet:
+    id: 1782196643979-6
+    author: HP (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: usersPK
+            name: id
+            type: INTEGER
+        - column:
+            name: created_at
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: email
+            type: VARCHAR(255)
+        - column:
+            name: password_hash
+            type: VARCHAR(255)
+        tableName: users
+- changeSet:
+    id: 1782196643979-7
+    author: HP (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: user_id
+        constraintName: UC_CANDİDATE_PROFİLESUSER_İD_COL
+        tableName: candidate_profiles
+- changeSet:
+    id: 1782196643979-8
+    author: HP (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: user_id
+        constraintName: UC_EMPLOYER_PROFİLESUSER_İD_COL
+        tableName: employer_profiles
+- changeSet:
+    id: 1782196643979-9
+    author: HP (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: employer_id
+        baseTableName: job_postings
+        constraintName: FKdeir8d9gt7pufs2d1hw8uuxpn
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: employer_profiles
+        validate: true
+- changeSet:
+    id: 1782196643979-10
+    author: HP (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: role_id
+        baseTableName: user_roles
+        constraintName: FKh8ciramu9cc9q3qcqiv4ue8a6
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: roles
+        validate: true
+- changeSet:
+    id: 1782196643979-11
+    author: HP (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: user_roles
+        constraintName: FKhfh9dx7w3ubf1co1vdev94g3f
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1782196643979-12
+    author: HP (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: candidate_profiles
+        constraintName: FKn7b2se0y378uox9e3aw2bjg13
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1782196643979-13
+    author: HP (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: employer_profiles
+        constraintName: FKniy318argyre8xh2n2qohss6a
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+

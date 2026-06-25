@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1782212808672-5
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: experience_years
+                  type: INT
+              - column:
+                  name: summary
+                  type: TEXT
+            tableName: candidate_profiles
+  - changeSet:
+      id: 1782212808672-7
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropColumn:
+            columnName: experience
+            tableName: candidate_profiles
+        - dropColumn:
+            columnName: education
+            tableName: candidate_profiles
+        - dropColumn:
+            columnName: skills
+            tableName: candidate_profiles
+  - changeSet:
+      id: 1782212808672-2
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: education
+                  type: jsonb
+            tableName: candidate_profiles
+  - changeSet:
+      id: 1782212808672-4
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: skills
+                  type: text[]
+            tableName: candidate_profiles
+

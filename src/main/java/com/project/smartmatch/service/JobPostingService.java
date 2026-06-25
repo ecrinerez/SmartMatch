@@ -1,7 +1,7 @@
 package com.project.smartmatch.service;
 
-import com.project.smartmatch.model.dto.JobPostingRequest;
-import com.project.smartmatch.model.dto.JobPostingResponse;
+import com.project.smartmatch.model.request.JobPostingRequest;
+import com.project.smartmatch.model.response.JobPostingResponse;
 import com.project.smartmatch.model.entity.EmployerProfile;
 import com.project.smartmatch.model.entity.JobPosting;
 import com.project.smartmatch.model.entity.User;
@@ -9,11 +9,18 @@ import com.project.smartmatch.repository.JobPostingRepository;
 import com.project.smartmatch.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +28,14 @@ public class JobPostingService {
 
     private final JobPostingRepository jobPostingRepository;
     private final UserRepository userRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private static final String CACHE_KEY = "active-jobs";
+    private static final String LATEST_JOBS_KEY = "jobs:latest";
 
     // Yeni bir iş ilanı oluşturur ve ilan sahibi olarak ilgili işvereni bağlar.
     @Transactional
+    @CacheEvict(value = CACHE_KEY, allEntries = true)
     public JobPostingResponse createJobPosting(JobPostingRequest request, String username) {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -38,7 +50,13 @@ public class JobPostingService {
         jobPosting.setEmployer(employer);
 
         JobPosting savedJob = jobPostingRepository.save(jobPosting);
-        return mapToResponse(savedJob);
+        JobPostingResponse response = mapToResponse(savedJob);
+
+        double score = System.currentTimeMillis();
+        redisTemplate.opsForZSet().add(LATEST_JOBS_KEY, response, score);
+        redisTemplate.opsForZSet().removeRange(LATEST_JOBS_KEY, 0, -21);
+
+        return response;
     }
 
     // İlanları şehre ve aktiflik durumuna göre süzerek sayfa sayfa (Pageable) listeler.
@@ -50,6 +68,7 @@ public class JobPostingService {
 
     // Belirtilen ID'ye sahip tek bir ilanın detaylarını getirir.
     @Transactional(readOnly = true)
+    @Cacheable(value = CACHE_KEY, key = "#id")
     public JobPostingResponse getJobPostingById(Long id) {
         JobPosting jobPosting = jobPostingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Job posting not found with id: " + id));
@@ -58,6 +77,7 @@ public class JobPostingService {
 
     // İlanı veritabanından çekip, sadece sahibi olan işverenin güncellemesine izin verir.
     @Transactional
+    @CacheEvict(value = CACHE_KEY, allEntries = true)
     public JobPostingResponse updateJobPosting(Long id, JobPostingRequest request, String username) {
         JobPosting jobPosting = jobPostingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Job posting not found with id: " + id));
@@ -68,11 +88,18 @@ public class JobPostingService {
 
         mapRequestToEntity(request, jobPosting);
         JobPosting updatedJob = jobPostingRepository.save(jobPosting);
-        return mapToResponse(updatedJob);
+
+        JobPostingResponse response = mapToResponse(updatedJob);
+        double score = System.currentTimeMillis();
+        redisTemplate.opsForZSet().add(LATEST_JOBS_KEY, response, score);
+        redisTemplate.opsForZSet().removeRange(LATEST_JOBS_KEY, 0, -21);
+
+        return response;
     }
 
     // İlanı veritabanından çekip, sadece sahibi olan işverenin silmesine izin verir.
     @Transactional
+    @CacheEvict(value = CACHE_KEY, allEntries = true)
     public void deleteJobPosting(Long id, String username) {
         JobPosting jobPosting = jobPostingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Job posting not found with id: " + id));
@@ -82,6 +109,31 @@ public class JobPostingService {
         }
 
         jobPostingRepository.delete(jobPosting);
+
+        JobPostingResponse response = mapToResponse(jobPosting);
+        redisTemplate.opsForZSet().remove(LATEST_JOBS_KEY, response);
+    }
+
+    // Full-text search index'ini kullanarak Türkçe dil kurallarına göre akıllı arama yapar.
+    @Transactional(readOnly = true)
+    public List<JobPostingResponse> searchJobs(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return jobPostingRepository.findAll().stream()
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+        }
+        String formattedQuery = keyword.trim().replaceAll("\\s+", " & ");
+        return jobPostingRepository.searchJobPostings(formattedQuery).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<Object> getLatest20Jobs() {
+        Set<Object> latestJobs = redisTemplate.opsForZSet().reverseRange(LATEST_JOBS_KEY, 0, 19);
+        if (latestJobs == null || latestJobs.isEmpty()) {
+            return List.of();
+        }
+        return List.copyOf(latestJobs);
     }
 
     // İstekten (Request) gelen verileri veritabanı Entity modeline dönüştürür.

@@ -1,7 +1,7 @@
 package com.project.smartmatch.controller;
 
-import com.project.smartmatch.model.dto.JobPostingRequest;
-import com.project.smartmatch.model.dto.JobPostingResponse;
+import com.project.smartmatch.model.request.JobPostingRequest;
+import com.project.smartmatch.model.response.JobPostingResponse;
 import com.project.smartmatch.service.JobPostingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/jobs")
@@ -41,6 +43,12 @@ public class JobPostingController {
         return ResponseEntity.ok(response);
     }
 
+    // Redis Sorted Set üzerinden en son yayınlanan 20 iş ilanını kronolojik olarak getirir.
+    @GetMapping("/latest")
+    public ResponseEntity<List<Object>> getLatest20Jobs() {
+        return ResponseEntity.ok(jobPostingService.getLatest20Jobs());
+    }
+
     // ID'si verilen tek bir ilanın tüm detaylarını herkesin görmesini sağlar.
     @GetMapping("/{id}")
     public ResponseEntity<JobPostingResponse> getJobById(@PathVariable Long id) {
@@ -63,5 +71,9 @@ public class JobPostingController {
                                                  @AuthenticationPrincipal UserDetails userDetails) {
         jobPostingService.deleteJobPosting(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/jobs/search")
+    public ResponseEntity<List<JobPostingResponse>> searchJobs(@RequestParam("q") String query) {
+        return ResponseEntity.ok(jobPostingService.searchJobs(query));
     }
 }

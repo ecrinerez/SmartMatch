@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
 
@@ -17,4 +19,6 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     Page<JobPosting> findJobsWithFilters(@Param("city") String city,
                                          @Param("isActive") Boolean isActive,
                                          Pageable pageable);
+    @Query(value = "SELECT * FROM job_postings WHERE search_vector @@ to_tsquery('turkish', :query)", nativeQuery = true)
+    List<JobPosting> searchJobPostings(@Param("query") String query);
 }

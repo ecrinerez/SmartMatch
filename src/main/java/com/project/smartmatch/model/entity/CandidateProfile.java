@@ -2,6 +2,11 @@ package com.project.smartmatch.model.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "candidate_profiles")
@@ -25,13 +30,19 @@ public class CandidateProfile {
     @Column(name = "resume_url")  //pdf vb olarak almak veritabanını çok şişirir, performansı düşürür.
     private String resumeUrl;
 
-    @Column(columnDefinition = "TEXT")
-    private String skills;
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "skills", columnDefinition = "text[]") // Adayın yeteneklerini PostgreSQL'de text[] (array) olarak saklamak için List<String> kullanıldı.
+    private List<String> skills;
 
-    @Column(columnDefinition = "TEXT")
-    private String experience;
+    @Column(name = "summary", columnDefinition = "TEXT")
+    private String summary;
 
-    @Column(columnDefinition = "TEXT")
-    private String education;
+    @Column(name = "experience_years")
+    private Integer experienceYears;
+
+    @JdbcTypeCode(SqlTypes.JSON) //jsonb yapısı
+    @Column(name = "education", columnDefinition = "jsonb")
+    private Map<String, Object> education;
+
 }
 

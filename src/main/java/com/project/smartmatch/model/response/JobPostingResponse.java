@@ -1,4 +1,4 @@
-package com.project.smartmatch.model.dto;
+package com.project.smartmatch.model.response;
 
 import lombok.Getter;
 import lombok.Setter;

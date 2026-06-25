@@ -1,4 +1,4 @@
-package com.project.smartmatch.model.dto;
+package com.project.smartmatch.model.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
