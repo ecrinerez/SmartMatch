@@ -26,7 +26,7 @@ public class JobPostingController {
 
     // Sadece EMPLOYER rolündeki giriş yapmış kullanıcının yeni ilan eklemesini sağlar.
     @PostMapping
-    @PreAuthorize("hasRole('EMPLOYER')")
+    @PreAuthorize("hasAnyAuthority('EMPLOYER', 'ROLE_EMPLOYER')") // 🚀 KÖKTEN ÇÖZÜM: CustomUserDetailsService veya Token'dan gelen rolün ön ekli/ön eksiz tüm varyasyonlarını kabul ederek 403 hatasını engeller.
     public ResponseEntity<JobPostingResponse> createJobPosting(@Valid @RequestBody JobPostingRequest request,
                                                                @AuthenticationPrincipal UserDetails userDetails) {
         JobPostingResponse response = jobPostingService.createJobPosting(request, userDetails.getUsername());
@@ -58,6 +58,7 @@ public class JobPostingController {
 
     // Sadece ilanın sahibi olan işverenin ilanı güncellemesine izin verir.
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('EMPLOYER', 'ROLE_EMPLOYER')") // 🚀 Güncelleme işlemi için de yetki kontrolü esnetildi.
     public ResponseEntity<JobPostingResponse> updateJobPosting(@PathVariable Long id,
                                                                @Valid @RequestBody JobPostingRequest request,
                                                                @AuthenticationPrincipal UserDetails userDetails) {
@@ -67,6 +68,7 @@ public class JobPostingController {
 
     // Sadece ilanın sahibi olan işverenin ilanı tamamen silmesini sağlar.
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('EMPLOYER', 'ROLE_EMPLOYER')") // 🚀 Silme işlemi için de yetki kontrolü esnetildi.
     public ResponseEntity<Void> deleteJobPosting(@PathVariable Long id,
                                                  @AuthenticationPrincipal UserDetails userDetails) {
         jobPostingService.deleteJobPosting(id, userDetails.getUsername());

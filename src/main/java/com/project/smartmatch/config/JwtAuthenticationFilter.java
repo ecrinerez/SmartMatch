@@ -61,4 +61,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-//gelen her isteğin başlığındaki JWT token yakalanıp doğrulanır.

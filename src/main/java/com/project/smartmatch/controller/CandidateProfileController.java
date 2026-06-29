@@ -20,7 +20,7 @@ public class CandidateProfileController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CandidateProfileResponse> getProfileById(@PathVariable Integer id) {
+    public ResponseEntity<CandidateProfileResponse> getProfileById(@PathVariable Long id) {
         return ResponseEntity.ok(candidateProfileService.getProfileById(id));
     }
 }

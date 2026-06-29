@@ -45,7 +45,7 @@ public class CandidateProfileService {
     }
 
     @Transactional(readOnly = true)
-    public CandidateProfileResponse getProfileById(Integer id) {
+    public CandidateProfileResponse getProfileById(Long id) {
         CandidateProfile profile = candidateProfileRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Profile not found with ID: " + id));
 

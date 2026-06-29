@@ -15,7 +15,7 @@ import java.util.Map;
 public class CandidateProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  //id sırası tutar; 1,2,3..
-    private Integer id;
+    private Long id;
 
     @OneToOne  //1 kullanıcının 1 profili olabilir
     @JoinColumn(name = "user_id", nullable = false, unique = true) //nullable= Bir kullanıcı profili olmadan var olamaz.

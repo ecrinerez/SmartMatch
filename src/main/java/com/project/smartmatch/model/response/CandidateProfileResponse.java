@@ -8,8 +8,8 @@ import java.util.Map;
 @Getter
 @Setter
 public class CandidateProfileResponse {
-    private Integer id;
-    private Integer userId;
+    private Long id;
+    private Long userId;
     private String email;
     private String phoneNumber;
     private String title;

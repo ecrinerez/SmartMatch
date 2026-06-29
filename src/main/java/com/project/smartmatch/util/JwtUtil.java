@@ -31,9 +31,15 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    //Email(username) token'dan çıkarılır
+    // Email(username) token'dan çıkarılır
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    // Token'dan userId claim'ini çıkarır
+    public Long extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("userId", Long.class);
     }
 
     // Token'ın süresinin bitip bitmediğini kontrol eder
@@ -58,12 +64,14 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    //Access Token üretir
-    public String generateAccessToken(String email, Map<String, Object> extraClaims) {
-        return createToken(extraClaims, email, accessTokenExpiration);
+    // Gelen extraClaims haritasını güvenli bir HashMap'e kopyalayarak Immutable hatasını engelliyoruz
+    public String generateAccessToken(String email, Long userId, Map<String, Object> extraClaims) {
+        Map<String, Object> modifiableClaims = (extraClaims != null) ? new HashMap<>(extraClaims) : new HashMap<>();
+        modifiableClaims.put("userId", userId); // Artık güvenle put yapabiliriz
+        return createToken(modifiableClaims, email, accessTokenExpiration);
     }
 
-    //Refresh Token üretir
+    // Refresh Token üretir
     public String generateRefreshToken(String email) {
         return createToken(new HashMap<>(), email, refreshTokenExpiration);
     }

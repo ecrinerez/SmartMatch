@@ -13,6 +13,6 @@ public class JobApplicationController {
     @PostMapping
     @PreAuthorize("hasRole('CANDIDATE')") // Sadece ROLE_CANDIDATE yetkisi olanlar erişebilir.
     public ResponseEntity<String> applyToJob(@RequestBody String applicationDetails) {
-        return ResponseEntity.ok("Başvuru başarıyla alındı (Candidate Erişimi Onaylandı).");
+        return ResponseEntity.ok("Application received successfully (Candidate Access Approved)).");
     }
 }

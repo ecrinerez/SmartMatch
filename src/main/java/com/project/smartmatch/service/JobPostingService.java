@@ -45,6 +45,11 @@ public class JobPostingService {
             throw new AccessDeniedException("User does not have an employer profile");
         }
 
+        // 🚀 ŞİRKET ADI NULL KONTROLÜ: Eğer işveren profilindeki şirket ismi boşsa ilan açmasını engelliyoruz.
+        if (employer.getCompanyName() == null || employer.getCompanyName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Company name cannot be null or empty. Please complete your employer profile first.");
+        }
+
         JobPosting jobPosting = new JobPosting();
         mapRequestToEntity(request, jobPosting);
         jobPosting.setEmployer(employer);
@@ -84,6 +89,11 @@ public class JobPostingService {
 
         if (!jobPosting.getEmployer().getUser().getEmail().equals(username)) {
             throw new AccessDeniedException("You are not authorized to update this job posting");
+        }
+
+        // 🚀 ŞİRKET ADI NULL KONTROLÜ: Güncelleme esnasında da profil doğrulaması yapıyoruz.
+        if (jobPosting.getEmployer().getCompanyName() == null || jobPosting.getEmployer().getCompanyName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Company name cannot be null or empty. Please complete your employer profile first.");
         }
 
         mapRequestToEntity(request, jobPosting);

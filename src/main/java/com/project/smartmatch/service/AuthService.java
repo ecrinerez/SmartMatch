@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,7 +80,14 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new RuntimeException("Email or password incorrect!");
         }
-        String accessToken = jwtUtil.generateAccessToken(user.getEmail(), Map.of("roles", user.getRoles()));
+
+        // 🚀 KÖKTEN ÇÖZÜM: Rolleri nesne olarak değil, Spring Security'nin tanıyacağı düz String listesi olarak token'a gömüyoruz.
+        List<String> roleNames = user.getRoles().stream()
+                .map(Role::getName)
+                .toList();
+
+
+        String accessToken = jwtUtil.generateAccessToken(user.getEmail(), user.getId(), Map.of("roles", roleNames));
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
 
         redisService.saveRefreshToken(user.getId().longValue(), refreshToken);
