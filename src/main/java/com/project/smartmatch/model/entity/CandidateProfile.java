@@ -31,10 +31,10 @@ public class CandidateProfile {
     private String resumeUrl;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(name = "skills", columnDefinition = "text[]") // Adayın yeteneklerini PostgreSQL'de text[] (array) olarak saklamak için List<String> kullanıldı.
+    @Column(name = "skills", columnDefinition = "text[]") // Birden fazla metini liste şeklinde tutabilmeyi sağlar
     private List<String> skills;
 
-    @Column(name = "summary", columnDefinition = "TEXT")
+    @Column(name = "summary", columnDefinition = "TEXT") //metinleri uzun yazabilmeyi sağlar
     private String summary;
 
     @Column(name = "experience_years")

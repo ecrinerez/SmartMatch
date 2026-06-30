@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1782732387096-1
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_aı_skıll_gap
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: job_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: candidate_id
+                  type: BIGINT
+              - column:
+                  name: missing_skills
+                  type: jsonb
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_at
+                  type: DATETIME
+            tableName: ai_skill_gap
+
