@@ -24,7 +24,7 @@ public class EnhanceCVController {
         try {
             EnhanceCVService.RateLimitedResult result = enhanceCVService.enhanceCandidateCV();
 
-            // Hocanın istediği X-RateLimit-Remaining header bilgisini buraya ekliyoruz
+            //X-RateLimit-Remaining header bilgisi
             HttpHeaders headers = new HttpHeaders();
             headers.add("X-RateLimit-Remaining", String.valueOf(result.remainingLimit));
 

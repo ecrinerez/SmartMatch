@@ -12,6 +12,7 @@ import java.util.Map;
 @Table(name = "candidate_profiles")
 @Getter
 @Setter
+
 public class CandidateProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  //id sırası tutar; 1,2,3..

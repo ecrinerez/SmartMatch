@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1782971555681-1
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_applıcatıons
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: candidate_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: job_posting_id
+                  type: BIGINT
+              - column:
+                  name: status
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: applied_at
+                  type: DATETIME
+              - column:
+                  constraints:
+                    nullable: false
+                  name: updated_at
+                  type: DATETIME
+            tableName: applications
+  - changeSet:
+      id: 1782971555681-2
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: candidate_id, job_posting_id
+            constraintName: uc_candidate_job
+            tableName: applications
+  - changeSet:
+      id: 1782971555681-3
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: candidate_id
+            baseTableName: applications
+            constraintName: FK_APPLICATIONS_ON_CANDIDATE
+            referencedColumnNames: id
+            referencedTableName: candidate_profiles
+  - changeSet:
+      id: 1782971555681-4
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: job_posting_id
+            baseTableName: applications
+            constraintName: FK_APPLICATIONS_ON_JOB_POSTING
+            referencedColumnNames: id
+            referencedTableName: job_postings
+

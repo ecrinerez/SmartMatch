@@ -2,6 +2,7 @@ package com.project.smartmatch.config;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.project.smartmatch.listener.RedisMessageListener;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,9 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -24,6 +28,7 @@ public class RedisConfig {
     private ObjectMapper redisObjectMapper() {
         return new ObjectMapper();
     }
+//Yani @Bean olarak tanımlanan yapılar, projenin her yerinden erişilebilen hizmet araçlarıdır.
 
     // Hocanın istediği 5 dakikalık TTL (yaşam süresi) ayarı
     @Bean
@@ -54,6 +59,36 @@ public class RedisConfig {
         template.setHashValueSerializer(serializer);
 
         return template;
+    }
+
+
+    // REDIS PUB/SUB BİLDİRİM SİSTEMİ BİLEŞENLERİ
+
+
+    // Kanal adı topic olarak tanımlanıyor.
+    @Bean
+    public ChannelTopic topic() {
+        return new ChannelTopic("notifications");
+    }
+
+    // Redis'e düz metin/JSON formatında mesaj publish edebilmek için kullanılan araç
+    @Bean
+    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory) {
+        return new StringRedisTemplate(connectionFactory);
+    }
+
+    // Telsiz merkezi gibi çalışan dinleyici konteyneri
+    @Bean
+    public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory,
+                                                        RedisMessageListener messageListener,
+                                                        ChannelTopic topic) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+
+        // YENİ EKLENEN SATIR: Dinleyiciyi (Listener) ve dinleyeceği kanalı (Topic) santrale kaydediyoruz
+        container.addMessageListener(messageListener, topic);
+
+        return container;
     }
 }
 

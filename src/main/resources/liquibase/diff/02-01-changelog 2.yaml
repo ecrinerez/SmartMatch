@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1782980257611-1
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_notıfıcatıons
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: message
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_read
+                  type: BOOLEAN
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_at
+                  type: DATETIME
+            tableName: notifications
+

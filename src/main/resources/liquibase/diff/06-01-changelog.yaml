@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1783326825254-1
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_candıdate_stats
+                  name: candidate_id
+                  type: BIGINT
+              - column:
+                  name: total_applications
+                  type: BIGINT
+            tableName: candidate_stats
+

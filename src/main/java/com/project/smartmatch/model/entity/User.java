@@ -37,7 +37,11 @@ public class User {
     private EmployerProfile employerProfile;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private CandidateProfile candidateProfile;
+
 }

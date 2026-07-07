@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1783327132649-1
+      author: HP
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_employer_stats
+                  name: employer_id
+                  type: BIGINT
+              - column:
+                  name: total_postings
+                  type: BIGINT
+              - column:
+                  name: pending_applications
+                  type: BIGINT
+              - column:
+                  name: accepted_applications
+                  type: BIGINT
+              - column:
+                  name: rejected_applications
+                  type: BIGINT
+            tableName: employer_stats
+
