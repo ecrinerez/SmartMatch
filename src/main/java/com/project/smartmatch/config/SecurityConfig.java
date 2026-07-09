@@ -1,5 +1,6 @@
 package com.project.smartmatch.config;
 
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,10 +34,13 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
+                        // 🌟 SWAGGER DOSYALARINA VE DÖKÜMANTASYON VERİSİNE GÜVENLİK FİLTRESİNE TAKILMADAN ERİŞİM SAĞLAR
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/ai/**").permitAll()
                         .requestMatchers("/jobs/**").permitAll()
-                        .requestMatchers("/error/").permitAll()
+                        .requestMatchers("/error", "/error/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

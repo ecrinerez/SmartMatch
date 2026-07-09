@@ -19,6 +19,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableCaching // Spring Boot'a cache kullanacağımızı bildiriyoruz
@@ -40,8 +42,13 @@ public class RedisConfig {
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
 
+        Map<String, RedisCacheConfiguration> customConfigurations = new HashMap<>();
+        customConfigurations.put("employerDashboard", config.entryTtl(Duration.ofMinutes(10)));
+        customConfigurations.put("candidateDashboard", config.entryTtl(Duration.ofMinutes(10)));
+
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
+                .withInitialCacheConfigurations(customConfigurations)
                 .build();
     }
 

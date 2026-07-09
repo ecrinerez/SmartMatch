@@ -12,13 +12,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/ai")
 @RequiredArgsConstructor
-
+@Tag(name = "4. AI Matching", description = "Operations handling AI-driven candidate and job compatibility analysis")
 public class AIMatchResultController {
     private final AIMatchResultService aiMatchResultService;
     @PostMapping("/match")
+    @Operation(summary = "Calculate AI match score", description = "Processes a candidate profile against a job posting via Gemini API to evaluate matching score and reasoning.")
     public ResponseEntity<AIMatchResultResponse> match(@Valid @RequestBody AIMatchResultRequest request) throws Exception {
         AIMatchResult entityResult=aiMatchResultService.calculateMatchScore (
                 request.getJobId(),

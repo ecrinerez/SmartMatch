@@ -17,6 +17,7 @@ import com.project.smartmatch.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.security.access.AccessDeniedException;
@@ -45,6 +46,7 @@ public class JobApplicationService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
+    @CacheEvict("candidateDashboard")
     public JobApplicationResponse applyToJob(JobApplicationRequest request, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found."));

@@ -14,15 +14,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/dashboard")
 @RequiredArgsConstructor
+@Tag(name = "6. Dashboards", description = "Operations retrieving performance statistics and metrics for both roles")
 public class DashboardController {
 
     private final DashboardService dashboardService;
     private final UserRepository userRepository;
 
     @GetMapping("/employer")
+    @Operation(summary = "Get employer dashboard metrics", description = "Fetches key business analytics including open job vacancies and applicant counts for the logged-in employer.")
     public ResponseEntity<EmployerDashboardResponse> getEmployerDashboard(@AuthenticationPrincipal UserDetails userDetails) {
         // Giriş yapmış kullanıcının email adresiyle kullanıcıyı ve bağlı olduğu işveren profilini bulur
         User user = userRepository.findByEmail(userDetails.getUsername())
@@ -38,6 +43,7 @@ public class DashboardController {
 
 
     @GetMapping("/candidate")
+    @Operation(summary = "Get candidate dashboard metrics", description = "Fetches application progress summaries and tracking stats for the logged-in candidate.")
     public ResponseEntity<CandidateDashboardResponse> getCandidateDashboard(@AuthenticationPrincipal UserDetails userDetails) {
         // Giriş yapmış kullanıcının email adresiyle kullanıcıyı ve bağlı olduğu aday profilini bulur
         User user = userRepository.findByEmail(userDetails.getUsername())

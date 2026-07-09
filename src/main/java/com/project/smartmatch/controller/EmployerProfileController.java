@@ -9,14 +9,19 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/employer-profiles")
 @RequiredArgsConstructor
+@Tag(name = "7. Employer Profiles", description = "Operations managing corporate company identity profiles")
 public class EmployerProfileController {
 
     private final EmployerProfileService employerProfileService;
 
     @PostMapping
+    @Operation(summary = "Create an employer profile", description = "Initializes corporate business details, website URLs, and industry domains for an employer account.")
     public ResponseEntity<EmployerProfileResponse> createProfile(
             @AuthenticationPrincipal UserDetails userDetails, // Filtrenin yakaladığı kullanıcıyı direkt alır
             @RequestBody EmployerProfileRequest request) {
@@ -30,6 +35,7 @@ public class EmployerProfileController {
         return ResponseEntity.ok(response);
     }
     @PutMapping
+    @Operation(summary = "Update an employer profile", description = "Modifies existing company definitions, descriptions, or updated phone numbers.")
     public ResponseEntity<EmployerProfileResponse> updateProfile(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody EmployerProfileRequest request) {

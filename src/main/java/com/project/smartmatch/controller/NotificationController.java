@@ -17,15 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
+@Tag(name = "8. Notifications", description = "Operations managing real-time and persistent user notifications")
 public class NotificationController {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
 
     @GetMapping
+    @Operation(summary = "Get unread notifications", description = "Fetches all unread notifications for the authenticated user ordered by creation timestamp.")
     public ResponseEntity<List<Notification>> getMyUnreadNotifications(@AuthenticationPrincipal UserDetails userDetails) {
         // 1. Giriş yapmış olan (authenticated) kullanıcının email adresi üzerinden veritabanındaki kaydı bulunur.
         // JWT Token ile sisteme giriş yapmış olan kullanıcının kim olduğunu (yani email adresini) güvenlik odasından tık diye çekip metodun önüne getiren Spring Boot kısayoludur. ->> @AuthenticationPrincipal
@@ -39,7 +45,8 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}/read")
-    public ResponseEntity<Void> markAsRead(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+    @Operation(summary = "Mark notification as read", description = "Marks a specific notification as read after validating ownership.")
+    public ResponseEntity<Void> markAsRead(@Parameter(description = "Unique notification ID", example = "1") @PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         // 1. Giriş yapmış kullanıcının kim olduğunu bulur
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("User not found."));

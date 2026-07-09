@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/ai")
+@Tag(name = "4. AI Matching", description = "Operations handling AI-driven candidate and job compatibility analysis")
 public class EnhanceCVController {
 
     private final EnhanceCVService enhanceCVService;
@@ -20,6 +24,7 @@ public class EnhanceCVController {
     }
 
     @PostMapping("/enhance-cv")
+    @Operation(summary = "Enhance candidate CV via AI", description = "Analyzes and provides optimization recommendations for the logged-in candidate's CV using the Gemini API under strict rate limits.")
     public ResponseEntity<?> enhanceCV() {
         try {
             EnhanceCVService.RateLimitedResult result = enhanceCVService.enhanceCandidateCV();
